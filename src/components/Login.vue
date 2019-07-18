@@ -27,7 +27,7 @@
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btns">
-          <el-button type="primary">登录</el-button>
+          <el-button type="primary" @click="login">登录</el-button>
           <el-button type="info" @click="resetLoginForm">重置</el-button>
         </el-form-item>
       </el-form>
@@ -58,6 +58,18 @@ export default {
     // 点击重置按钮
     resetLoginForm() {
       this.$refs.loginFormRef.resetFields();
+    },
+    login() {
+      console.log(
+        this.$refs.loginFormRef.validate(async valid => {
+          if (!valid) return;
+          const { data: res } = await this.$http.post("login", this.loginForm);
+          if (res.meta.status != 200) return this.$message.error("登录失败");
+          this.$message.success("登录成功");
+          window.sessionStorage.setItem("token", res.data.token);
+          this.$router.push("/home");
+        })
+      );
     }
   }
 };
@@ -87,6 +99,7 @@ export default {
     background-color: #0d759e;
     border-radius: 50%;
     padding: 10px;
+    box-shadow: 13px 13px 12px #a7a4a4;
     position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
